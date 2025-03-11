@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'httparty'
-require 'nokogiri'
 
 BASE_URL = "https://api.exchangerate.host/latest"
 

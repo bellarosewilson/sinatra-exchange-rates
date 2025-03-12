@@ -2,19 +2,28 @@ require "sinatra"
 require "sinatra/reloader"
 require "http"
 require "json"
+require "dotenv/load"
+
+API_KEY = ENV["EXCHANGE_RATE_KEY"] || "default_or_test_key"
+
+if API_KEY == "default_or_test_key"
+  raise "ERROR: Please set your EXCHANGE_RATE_KEY environment variable."
+end
 
 get("/") do
-  response = HTTP.get("https://api.exchangerate.host/list?access_key=#{ENV.fetch("EXCHANGE_RATE_KEY")}")
-  @currencies = JSON.parse(response.to_s).fetch("currencies")
+  @raw_response = HTTP.get("https://api.exchangerate.host/list?access_key=#{ENV.fetch("EXCHANGE_RATE_KEY")}")
+  @parsed_response = JSON.parse(@raw_response.to_s)
+  @currencies = @parsed_response.fetch("currencies")
 
   erb(:homepage)
 end
 
 get("/:from_currency") do
-  @the_symbol = params.fetch("from_currency")
+  @the_symbol = params.fetch("from_currency") 
 
-  response = HTTP.get("https://api.exchangerate.host/list?access_key=#{ENV.fetch("EXCHANGE_RATE_KEY")}")
-  @currencies = JSON.parse(response.to_s).fetch("currencies")
+  @raw_response = HTTP.get("https://api.exchangerate.host/list?access_key=#{ENV.fetch("EXCHANGE_RATE_KEY")}")
+  @parsed_response = JSON.parse(@raw_response.to_s)
+  @currencies = @parsed_response.fetch("currencies")
 
   erb(:step_one)
 end
@@ -24,8 +33,10 @@ get("/:from_currency/:to_currency") do
   @to = params.fetch("to_currency")
 
   url = "https://api.exchangerate.host/convert?access_key=#{ENV.fetch("EXCHANGE_RATE_KEY")}&from=#{@from}&to=#{@to}&amount=1"
-  response = HTTP.get(url)
-  @amount = JSON.parse(response.to_s).fetch("result")
+  raw_response = HTTP.get(url)
+  parsed_response = JSON.parse(raw_response.to_s)
+
+  @amount = parsed_response.fetch("result")
 
   erb(:step_two)
 end

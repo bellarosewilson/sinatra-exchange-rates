@@ -12,6 +12,7 @@ get("/") do
   @currencies = @parsed_response.fetch ("currencies")
   
   erb (:homepage)
+
 end
 
 get("/:from_currency") do
@@ -24,19 +25,23 @@ get("/:from_currency") do
   @parsed_response = JSON.parse(@string_response)
  
   @currencies = @parsed_response.fetch ("currencies")
+ 
   erb(:step_one)
+
+end
 
 get("/:from_currency/:to_currency") do
   @from_currency = params.fetch("from_currency")
   @to_currency = params.fetch("to_currency")
 
-  @raw_response = HTTP.get("https://api.exchangerate.host/convert?from=#{@first_symbol}&to=#{@second_symbol}&amount=1&access_key=#{ENV.fetch("EXCHANGE_RATE_KEY")}")
+  @url = HTTP.get("https://api.exchangerate.host/convert?access_key=#{ENV.fetch("EXCHANGE_RATE_KEY").chomp}&from=#{@from}&to=#{@to}=&amount=1"
 
   @string_response = @raw_response.to_s
 
   @parsed_response = JSON.parse(@string_response)
 
   @conversion = @parsed_response.fetch("result")
+  
   erb(:step_two)
 
 end

@@ -14,18 +14,17 @@ get("/") do
   erb (:homepage)
 end
 
+get("/:first_symbol") do
+  @the_symbol = params.fetch("first_symbol") 
+
+  erb(:step_one)
+
+end
 BASE_URL = "https://api.exchangerate.host/latest"
 
 def fetch_currency_data
   response = HTTParty.get(BASE_URL)
   response.parsed_response["rates"] if response.code == 200
-end
-
-
-get '/' do
-  @rates = fetch_currency_data
-  halt 500, "Error fetching currency data" unless @rates
-  erb :index
 end
 
 get '/:currency' do

@@ -42,7 +42,7 @@ get("/:from_currency/:to_currency") do
 
   @parsed_response = JSON.parse(@string_response)
 
-  @conversion = @parsed_response.fetch("result")
+  @amount = @parsed_response.fetch("result")
   
   erb(:step_two)
 
